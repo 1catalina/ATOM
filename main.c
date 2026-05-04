@@ -1,20 +1,28 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "lexer.h"
 #include "utils.h"
+#include "parser.h"
 
-int main(int argc, char* argv[]) {
+int main() {
     FILE* fout = fopen("out.txt", "w");
     if (!fout) {
         printf("Unable to open file to write\n");
         return 1;
     }
 
-    char* buffer = loadFile("testlex.c");
+    char* buffer = loadFile("testparser.c");
     Token* tks = tokenize(buffer);
 
     //printTokens(tks);
-    writeTokens(tks, fout);
-    printf("Tokenize process is done!\n");
+    //writeTokens(tks, fout);
+    //printf("Tokenize process is done\n");
+
+    parse(tks);
+    printf("Parsing successful!\n");
+	writeTokens(tks, fout);
+	
 
     free(buffer);
     fclose(fout);

@@ -1,7 +1,7 @@
 struct Pt{
 	int x;
 	int y;
-	};
+};
 struct Pt points[10];
 
 double max(double a,double b){

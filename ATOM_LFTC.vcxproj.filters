@@ -27,7 +27,10 @@
     <ClCompile Include="parser.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="x64\Debug\testlex.c">
+    <ClCompile Include="testlex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testparser.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,5 +44,8 @@
     <ClInclude Include="parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="out.txt" />
   </ItemGroup>
 </Project>
