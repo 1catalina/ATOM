@@ -33,7 +33,7 @@ bool exprPostfix(void);
 bool exprPostfixPrim(void);
 bool exprPrimary(void);
 
-Token *iTk;		// the iterator in the tokens list
+Token *iTk;				// the iterator in the tokens list
 Token *consumedTk;		// the last consumed token
 
 void tkerr(const char *fmt,...){
@@ -255,8 +255,10 @@ bool exprAssign() {
     iTk = start;
     return false;
 }
+
 //exprOr: exprOr OR exprAnd | exprAnd
 // exprOr: exprAnd exprOrPrim
+
 bool exprOr() {
     Token *start = iTk;
     if (exprAnd()) {
@@ -269,6 +271,7 @@ bool exprOr() {
 }
 
 // exprOrPrim: OR exprAnd exprOrPrim | epsilon
+
 bool exprOrPrim() {
     if (consume(OR)) {
         if (exprAnd()) {
@@ -280,8 +283,9 @@ bool exprOrPrim() {
     return true; // epsilon
 }
 
-//exprAnd: exprAnd AND exprEq | exprEq
+// exprAnd: exprAnd AND exprEq | exprEq
 // exprAnd: exprEq exprAndPrim
+
 bool exprAnd() {
     Token *start = iTk;
     if (exprEq()) {
@@ -292,7 +296,9 @@ bool exprAnd() {
     iTk = start;
     return false;
 }
+
 // exprAndPrim: AND exprEq exprAndPrim | epsilon
+
 bool exprAndPrim() {
 	if (consume(AND)) {
 		if (exprEq()) {
@@ -306,6 +312,7 @@ bool exprAndPrim() {
 
 // exprEq: exprEq ( EQUAL | NOTEQ ) exprRel | exprRel
 // exprEq: exprRel exprEqPrim
+
 bool exprEq() {
     Token *start = iTk;
 	if (exprRel()) {
@@ -316,7 +323,9 @@ bool exprEq() {
 	iTk = start;
 	return false;
 }
+
 // exprEqPrim: ( EQUAL | NOTEQ ) exprRel exprEqPrim | epsilon
+
 bool exprEqPrim() {
 	if (consume(EQUAL)) {
 		if (exprRel()) {
@@ -337,6 +346,7 @@ bool exprEqPrim() {
 
 //exprRel: exprRel ( LESS | LESSEQ | GREATER | GREATEREQ ) exprAdd | exprAdd
 // exprRel: exprAdd exprRelPrim
+
 bool exprRel() {
 	Token *start = iTk;
 	if (exprAdd()) {
@@ -349,6 +359,7 @@ bool exprRel() {
 }
 
 // exprRelPrim: ( LESS | LESSEQ | GREATER | GREATEREQ ) exprAdd exprRelPrim | epsilon
+
 bool exprRelPrim() {	
 	if (consume(LESS)) {
 		if (exprAdd()) {
@@ -383,6 +394,7 @@ bool exprRelPrim() {
 
 //exprAdd: exprAdd ( ADD | SUB ) exprMul | exprMul
 // exprAdd: exprMul exprAddPrim
+
 bool exprAdd() {
 	Token *start = iTk;
 	if (exprMul()) {
@@ -393,7 +405,9 @@ bool exprAdd() {
 	iTk = start;
 	return false;
 }
+
 // exprAddPrim: ( ADD | SUB ) exprMul exprAddPrim | epsilon
+
 bool exprAddPrim() {
 	if (consume(ADD)) {
 		if (exprMul()) {
@@ -414,6 +428,7 @@ bool exprAddPrim() {
 
 //exprMul: exprMul ( MUL | DIV ) exprCast | exprCast
 // exprMul: exprCast exprMulPrim
+
 bool exprMul() {
 	Token *start = iTk;
 	if (exprCast()) {
@@ -424,7 +439,9 @@ bool exprMul() {
 	iTk = start;
 	return false;
 }
+
 // exprMulPrim: ( MUL | DIV ) exprCast exprMulPrim | epsilon
+
 bool exprMulPrim() {
 	if (consume(MUL)) {
 		if (exprCast()) {
@@ -444,6 +461,7 @@ bool exprMulPrim() {
 }
 
 //exprCast: LPAR typeBase arrayDecl? RPAR exprCast | exprUnary
+
 bool exprCast() {
 	Token *start = iTk;
 	if (consume(LPAR)) {
@@ -461,6 +479,7 @@ bool exprCast() {
 }
 
 //exprUnary: ( SUB | NOT ) exprUnary | exprPostfix
+
 bool exprUnary() {
 	Token *start = iTk;
 	if (consume(SUB)) {
@@ -476,13 +495,13 @@ bool exprUnary() {
 	iTk = start;
 	return exprPostfix();
 }
-/*
-exprPostfix: exprPostfix LBRACKET expr RBRACKET
-| exprPostfix DOT ID
-| exprPrimary
 
-exprPostfix: exprPrimary exprPostfixPrim
-*/
+//exprPostfix: exprPostfix LBRACKET expr RBRACKET
+//| exprPostfix DOT ID
+//| exprPrimary
+//
+//exprPostfix: exprPrimary exprPostfixPrim
+
 
 bool exprPostfix() {
 	Token *start = iTk;
@@ -494,6 +513,7 @@ bool exprPostfix() {
 	iTk = start;
 	return false;
 }
+
 // exprPostfixPrim: LBRACKET expr RBRACKET exprPostfixPrim | DOT ID exprPostfixPrim | epsilon
 bool exprPostfixPrim() {
 	if (consume(LBRACKET)) {
@@ -514,10 +534,9 @@ bool exprPostfixPrim() {
 	return true; // epsilon
 }
 
-/*
-exprPrimary: ID ( LPAR ( expr ( COMMA expr )* )? RPAR )?
-| INT | DOUBLE | CHAR | STRING | LPAR expr RPAR
-*/
+
+//exprPrimary: ID ( LPAR ( expr ( COMMA expr )* )? RPAR )?
+//| INT | DOUBLE | CHAR | STRING | LPAR expr RPAR
 
 bool exprPrimary() {
 	Token *start = iTk;
@@ -535,9 +554,11 @@ bool exprPrimary() {
 		return true;
 	}
 	iTk = start;
-	if (consume(INT) || consume(DOUBLE) || consume(CHAR) || consume(STRING)) {
-		return true;
-	}
+	if (consume(INT)) return true;
+	else if (consume(DOUBLE)) return true;
+	else if (consume(CHAR)) return true;
+	else if (consume(STRING)) return true;
+
 	iTk = start;
 	if (consume(LPAR)) {
 		if (expr()) {
@@ -551,6 +572,7 @@ bool exprPrimary() {
 }
 
 // unit: ( structDef | fnDef | varDef )* END
+
 bool unit(){
 	for(;;){
 		if(structDef()){}
