@@ -4,8 +4,8 @@ struct Pt{
 };
 struct Pt points[10];
 
-double max(double a,double b){
-	if(a>b)return a;
+double max(double a, double b){
+	if(a > b)return a;
 		else return b;
 	}
 
@@ -24,4 +24,3 @@ void main(){
 		i=i/2;
 		}
 	}
-	
