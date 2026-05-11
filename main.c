@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+
 #include "lexer.h"
 #include "utils.h"
 #include "parser.h"
@@ -12,15 +12,15 @@ int main() {
         return 1;
     }
 
-    char* buffer = loadFile("testparser.c");
+    char* buffer = loadFile("testad.c");
     Token* tks = tokenize(buffer);
 
     //printTokens(tks);
     //writeTokens(tks, fout);
-    //printf("Tokenize process is done\n");
+    //printf("Tokenize process successful\n");
 
     parse(tks);
-    printf("Parsing successful!\n");
+    printf("Parsing successful\n");
 	writeTokens(tks, fout);
 	
 
