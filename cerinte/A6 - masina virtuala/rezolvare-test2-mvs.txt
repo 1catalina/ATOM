@@ -1,0 +1,56 @@
+int max(int a,int b);
+int max3(int a,int b,int c);
+int random();
+float sqrt(float x);
+// constantele fara parte zecimala sunt considerate int: 108, 21
+// constantele cu zecimale sunt considerate float: 3.14, 7.0
+
+//test 2
+int f(float v){
+	float v1=random(), v2=random();
+	if(v==max3(v,v1,v2))return 0;
+	if(v1>v2)return -1;
+	return 1;
+	}
+	
+// MVS
+Pasul 1: cadrul functiei
+
+v            ret_addr          old_FP        v1         v2
+-2              -1                      0             1           2
+
+		ENTER			2		// nr. var. locale
+		//float v1=random(), v2=random();
+		CALL				random
+		CONV.i.f
+		FPSTORE.f	1		// v1=POP(....)
+		CALL				random
+		CONV.i.f
+		FPSTORE.f	2		// v2=POP(...)
+		// if(v==max3(v,v1,v2))return 0;
+		FPLOAD.f		-2		// v
+		FPLOAD.f		-2		// v
+		CONV.f.i					// (int)v
+		FPLOAD.f		1		// v1
+		CONV.f.i					// (int)v1
+		FPLOAD.f		2		// v2
+		CONV.f.i					// (int)v2
+		CALL				max3
+		CONV.i.f					// (float)max3
+		EQ.f							// v==(float)max3...
+		JF					L1
+		PUSH.i			0
+		RET					1		// return 0
+L1:	// if(v1>v2)return -1;
+		FPLOAD.f		1		// v1
+		FPLOAD.f		2		// v2
+		GRT.f						// v1>v2
+		JF					L2
+		PUSH.i			-1
+		RET					1		// return -1
+L2:	// return 1;
+		PUSH.i			1
+		RET					1		// return 1
+		
+		
+		

@@ -12,7 +12,7 @@ int main() {
         return 1;
     }
 
-    char* buffer = loadFile("testad.c");
+    char* buffer = loadFile("testat.c");
     Token* tks = tokenize(buffer);
 
     //printTokens(tks);

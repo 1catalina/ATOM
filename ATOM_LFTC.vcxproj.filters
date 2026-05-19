@@ -16,6 +16,9 @@
     <Filter Include="Source Files\tests">
       <UniqueIdentifier>{3f901105-558a-4332-a8ba-63a46daa706b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\results">
+      <UniqueIdentifier>{ca0b378f-7b21-4811-9f70-90e18f7f04cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -83,5 +86,11 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="out.txt" />
+    <Text Include="simboluri-rezultate.txt">
+      <Filter>Source Files\results</Filter>
+    </Text>
+    <Text Include="rezultat-executie.txt">
+      <Filter>Source Files\results</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,0 +1,47 @@
+int max(int a,int b);
+int max3(int a,int b,int c);
+int random();
+float sqrt(float x);
+// constantele fara parte zecimala sunt considerate int: 108, 21
+// constantele cu zecimale sunt considerate float: 3.14, 7.0
+
+int f(int x,float y){
+		int r=max3(random()+0.5,x-1,7)*((x+y)*2-y/3);
+L1		while(r){
+			show(r);
+			r=r-1;
+			}
+L2		return 0;	
+}
+//forma poloneza pentru max3(random()+0.5,x-1,7)*((x+y)*2-y/3):
+//random() i.f 0.5 + f.i x 1 - 7 max3() i.f x i.f y + 2 i.f * y 3 i.f / - * 
+
+
+// Cadrul functie
+call_dst	x	 y		ret_addr	old_FP	r	#	#	#	...
+	-4		-3	 -2		-1				0	1	2	3	4
+
+
+		ENTER		1+?		// 1 var locala +3 registri
+		CALL		#2,random		// #2=random()
+		CONV.i.f	#2,#2			// #2 = (float)#2
+		ADD.f		#2,#2,0.5		// #2 = #2 + 0.5
+		CONV.f.i	#2,#2			// #2 = (int)#2
+		SUB.i		#3,#-3,1		// #3 = x - 1
+		CALL		#2,max3,#2,#3,7	// #2=max3(#2,#3,7)
+		CONV.i.f	#2,#2			// #2=(float)#2
+		CONV.i.f	#3,#-3			// #3=(float)x
+		ADD.f		#3,#3,#-2		// #3=#3+y
+		CONV.i.f	#4,2			// #4=(float)2
+		MUL.f		#3,#3,#4		// #3=#3*#4
+		CONV.i.f	#4,3			// #4=(float)3
+		DIV.f		#4,#-2,#4	  	// #4=y/#4
+		SUB.f		#3,#3,#4
+		MUL.f		#2,#2,#3		// #2=#2*#3
+		CONV.f.i	#2,#2			// #2=(int)#2
+		SET.i		#1,#2			// r=#2
+L1:		JF			#1,L2
+		CALL		#2,show,#1
+		SUB.i		#1,#1,1			// r=r-1
+		JMP			L1
+L2:		RET.i		2,0

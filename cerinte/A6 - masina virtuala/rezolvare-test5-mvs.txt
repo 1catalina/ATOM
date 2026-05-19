@@ -1,0 +1,47 @@
+// test 5  MVStiva
+int ack(int m,int n){
+	if(m==0)return n+1;
+	else if(m>0&&n==0)return ack(m-1,1);
+	return ack(m-1, ack(m,n-1));
+	}
+//cadrul functiei
+m 	n 	ret_addr	old_FP	var.loc
+-3	-2		-1			0	0
+	ENTER 0		//0 var locale
+	FPLOAD.i -3	//m pe stiva
+	PUSH.i 	0	//0 pe stiva
+	EQ.i 		//m==0?
+	JF	L1
+	FPLOAD.i -2	//n pe stiva
+	PUSH.i 	1	//1 pe stiva
+	ADD.i 		//n+1 pe stiva
+	RET 2		//return n+1
+L1:	//if(m>0&&n==0)
+	FPLOAD.i -3	//m pe stiva
+	PUSH.i 	0	//0 pe stiva
+	GT.i 		//m>0?
+	FPLOAD.i -2	//n pe stiuva
+	PUSH.i 0	//0 pe stiva
+	EQ.i 		//n==0?
+	AND			//m>0&&n==0?
+	JF 	L2
+	FPLOAD.i -3	//m pe stiva
+	PUSH.i 	1	//1 pe stiva
+	SUB.i 		//m-1 pe stiva
+	PUSH,i 	1	//1 pe stiva
+	CALL ack	//call ack(m-1,1)
+	RET 2		//return ack(m-1,1)
+L2:	//ack(m-1, ack(m,n-1))
+	//m-1 pe stiva - primul parametru
+	FPLOAD.i -3	//m pe stiva
+	PUSH.i 	1	//1 pe stiva
+	SUB.i 		//m-1 pe stiva
+	//ack(m,n-1) pe stiva- al 2-lea parametru
+	FPLOAD.i -3	//m pe stiva
+	FPLOAD.i -2	//n pe stiva
+	PUSH.i 	1	// 1 pe stiva
+	SUB.i 		//n-1 pe stiva
+	CALL ack	//call ack(m,n-1)
+	CALL ack	//call ack(m-1, ack(m,n-1))
+	RET 2		// return 2 param cu rezultatul de pe stiva
+		
