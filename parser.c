@@ -39,7 +39,7 @@ bool exprPostfixPrim(Ret* r);
 bool exprPrimary(Ret* r);
 bool typeBase(Type* t);
 bool arrayDecl(Type* t);
-bool fnParam();	
+bool fnParam();
 
 void tkerr(const char* fmt, ...) {
 	fprintf(stderr, "error in line %d: ", iTk->line);
@@ -63,9 +63,9 @@ bool consume(int code) {
 // typeBase: TYPE_INT | TYPE_DOUBLE | TYPE_CHAR | STRUCT ID
 bool typeBase(Type* t) {
 	t->n = -1;
-	if (consume(TYPE_INT))    { t->tb = TB_INT;    return true; }
+	if (consume(TYPE_INT)) { t->tb = TB_INT;    return true; }
 	if (consume(TYPE_DOUBLE)) { t->tb = TB_DOUBLE; return true; }
-	if (consume(TYPE_CHAR))   { t->tb = TB_CHAR;   return true; }
+	if (consume(TYPE_CHAR)) { t->tb = TB_CHAR;   return true; }
 	if (consume(STRUCT)) {
 		if (consume(ID)) {
 			Token* tkName = consumedTk;
@@ -421,7 +421,6 @@ bool exprCast(Ret* r) {
 			arrayDecl(&t);
 			if (consume(RPAR)) {
 				if (exprCast(&op)) {
-					// cast validation rules
 					if (t.tb == TB_STRUCT) tkerr("cannot convert to a struct type");
 					if (op.type.tb == TB_STRUCT) tkerr("cannot convert a struct");
 					if (op.type.n >= 0 && t.n < 0) tkerr("an array can be converted only to another array");
@@ -442,7 +441,6 @@ bool exprCast(Ret* r) {
 // exprMulPrim[inout Ret *r]: ( MUL | DIV ) exprCast[&right]
 //   { both operands must support arithmetic; result type = arith result }
 //   exprMulPrim[r]
-// | epsilon
 bool exprMulPrim(Ret* r) {
 	if (consume(MUL) || consume(DIV)) {
 		Ret right;
@@ -468,7 +466,7 @@ bool exprMul(Ret* r) {
 // exprAddPrim[inout Ret *r]: ( ADD | SUB ) exprMul[&right]
 //   { both operands arithmetic; result type = arith result }
 //   exprAddPrim[r]
-// | epsilon
+ // | epsilon
 bool exprAddPrim(Ret* r) {
 	if (consume(ADD) || consume(SUB)) {
 		Ret right;
@@ -490,22 +488,84 @@ bool exprAdd(Ret* r) {
 	return false;
 }
 
-// exprRelPrim[inout Ret *r]: ( LESS | LESSEQ | GREATER | GREATEREQ ) exprAdd[&right]
-//   { both operands arithmetic; result is int }
-//   exprRelPrim[r]
-// | epsilon
-bool exprRelPrim(Ret* r) {
-	if (consume(LESS) || consume(LESSEQ) || consume(GREATER) || consume(GREATEREQ)) {
+// exprRelPrim: ( LESS | LESSEQ | GREATER | GREATEREQ ) exprAdd exprRelPrim | epsilon
+bool exprRelPrim(Ret* r)
+{
+	if (consume(LESS))
+	{
 		Ret right;
-		if (exprAdd(&right)) {
+		if (exprAdd(&right))
+		{
 			Type tDst;
-			if (!arithTypeTo(&r->type, &right.type, &tDst))
-				tkerr("invalid operand type for <, <=, >, >=");
-			// AT: result of relational comparison is always int
+			if (!arithTypeTo(&r->type, &right.type, &tDst)) tkerr("invalid operand type for <");
 			*r = (Ret){ {TB_INT, NULL, -1}, false, true };
-			return exprRelPrim(r);
+
+			if (exprRelPrim(r))
+			{
+				return true;
+			}
 		}
-		tkerr("expression missing after relational operator");
+		else
+		{
+			tkerr("syntax error in less-than expression: expected expression after '<'");
+		}
+	}
+	else if (consume(LESSEQ))
+	{
+		Ret right;
+		if (exprAdd(&right))
+		{
+			Type tDst;
+			if (!arithTypeTo(&r->type, &right.type, &tDst)) tkerr("invalid operand type for <=");
+			*r = (Ret){ {TB_INT, NULL, -1}, false, true };
+
+			if (exprRelPrim(r))
+			{
+				return true;
+			}
+		}
+		else
+		{
+			tkerr("syntax error in less-than-or-equal expression: expected expression after '<='");
+		}
+	}
+	else if (consume(GREATER))
+	{
+		Ret right;
+		if (exprAdd(&right))
+		{
+			Type tDst;
+			if (!arithTypeTo(&r->type, &right.type, &tDst)) tkerr("invalid operand type for >");
+			*r = (Ret){ {TB_INT, NULL, -1}, false, true };
+
+			if (exprRelPrim(r))
+			{
+				return true;
+			}
+		}
+		else
+		{
+			tkerr("syntax error in greater-than expression: expected expression after '>'");
+		}
+	}
+	else if (consume(GREATEREQ))
+	{
+		Ret right;
+		if (exprAdd(&right))
+		{
+			Type tDst;
+			if (!arithTypeTo(&r->type, &right.type, &tDst)) tkerr("invalid operand type for >=");
+			*r = (Ret){ {TB_INT, NULL, -1}, false, true };
+
+			if (exprRelPrim(r))
+			{
+				return true;
+			}
+		}
+		else
+		{
+			tkerr("syntax error in greater-than-or-equal expression: expected expression after '>='");
+		}
 	}
 	return true; // epsilon
 }
@@ -519,7 +579,7 @@ bool exprRel(Ret* r) {
 // exprEqPrim[inout Ret *r]: ( EQUAL | NOTEQ ) exprRel[&right]
 //   { both operands arithmetic; result is int }
 //   exprEqPrim[r]
-// | epsilon
+ // | epsilon
 bool exprEqPrim(Ret* r) {
 	if (consume(EQUAL) || consume(NOTEQ)) {
 		Ret right;
@@ -545,7 +605,7 @@ bool exprEq(Ret* r) {
 // exprAndPrim[inout Ret *r]: AND exprEq[&right]
 //   { both operands arithmetic; result is int }
 //   exprAndPrim[r]
-// | epsilon
+ // | epsilon
 bool exprAndPrim(Ret* r) {
 	if (consume(AND)) {
 		Ret right;
@@ -571,7 +631,7 @@ bool exprAnd(Ret* r) {
 // exprOrPrim[inout Ret *r]: OR exprAnd[&right]
 //   { both operands arithmetic; result is int }
 //   exprOrPrim[r]
-// | epsilon
+ // | epsilon
 bool exprOrPrim(Ret* r) {
 	if (consume(OR)) {
 		Ret right;
@@ -601,21 +661,22 @@ bool exprOr(Ret* r) {
 bool exprAssign(Ret* r) {
 	Token* start = iTk;
 	Ret rDst;
-	if (exprUnary(&rDst)) {
+	// Changed here: try parsing a cast at top-level of an RHS as well
+	if (exprCast(&rDst)) {
 		if (consume(ASSIGN)) {
 			if (exprAssign(r)) {
-				if (!rDst.lval)  tkerr("the assign destination must be a left-value");
-				if (rDst.ct)     tkerr("the assign destination cannot be constant");
-				if (!canBeScalar(&rDst)) tkerr("the assign destination must be scalar");
-				if (!canBeScalar(r))     tkerr("the assign source must be scalar");
+				if (!rDst.lval)  tkerr("The assign destination must be a left-value");
+				if (rDst.ct)     tkerr("The assign destination cannot be constant");
+				if (!canBeScalar(&rDst)) tkerr("The assign destination must be scalar");
+				if (!canBeScalar(r))     tkerr("The assign source must be scalar");
 				if (!convTo(&r->type, &rDst.type))
-					tkerr("the assign source cannot be converted to destination");
+					tkerr("The assign source cannot be converted to destination");
 				// result is the destination type, rval, constant
 				r->lval = false;
 				r->ct = true;
 				return true;
 			}
-			tkerr("expression missing after =");
+			tkerr("Expression missing after =");
 		}
 	}
 	iTk = start;

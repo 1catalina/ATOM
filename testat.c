@@ -7,7 +7,7 @@ struct S a;
 struct S v[10];
 
 void f(char text[],int i,char ch) {
-	text[i]=ch;
+	text[i] = ch;
 	}
 
 int h(int x,int y){
