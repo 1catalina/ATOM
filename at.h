@@ -1,14 +1,12 @@
 #pragma once
 
-// types analysis
-
 #include <stdbool.h>
 #include "ad.h"
 
 typedef struct{
-	Type type;		// the returned type
+	Type type;		    // the returned type
 	bool lval;			// true if left-value
-	bool ct;				// true if constant
+	bool ct;			// true if constant
 	}Ret;
 
 // returns true if r->type can be converted
